@@ -3,7 +3,7 @@ import pandas as pd
 import os
 
 # Page configuration
-st.set_page_config(page_title="Excel Search App", page_icon="🔍")
+st.set_page_config(page_title="お薬の説明検索", page_icon="🔍")
 
 st.title("🔍 お薬の説明")
 
