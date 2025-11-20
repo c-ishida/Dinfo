@@ -3,7 +3,7 @@ import pandas as pd
 import os
 
 # Page configuration
-st.set_page_config(page_title="お薬の説明 - 漢方薬局ハレノヴァ")
+st.set_page_config(page_title="お薬の説明 - 漢方薬局ハレノヴァ", page_icon="🔍")
 
 st.title("🌿 お薬の説明")
 
@@ -109,7 +109,7 @@ else:
                     
                     results = df[mask]
                     
-                    st.write(f"{len(results)}件が見つかりました")
+                    st.write(f"{len(results)}件 見つかりました")
                     st.dataframe(results)
                     
                     # Print layout - auto-show if search button was clicked, otherwise show button
@@ -162,7 +162,7 @@ else:
                                         }}
                                     }}
                                     body {{
-                                        font-family: 'MS Gothic', 'Yu Gothic', sans-serif;
+                                        font-family: 'Meiryo', 'MS Gothic', 'Yu Gothic', sans-serif;
                                         margin: 0;
                                         padding: 20px;
                                     }}
