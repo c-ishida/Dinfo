@@ -3,9 +3,9 @@ import pandas as pd
 import os
 
 # Page configuration
-st.set_page_config(page_title="お薬の説明検索", page_icon="🔍")
+st.set_page_config(page_title="お薬の説明 - 漢方薬局ハレノヴァ", page_icon="🔍")
 
-st.title("🔍 お薬の説明")
+st.title("🌿 お薬の説明")
 
 # File path
 FILE_PATH = "処方の説明.xlsx"
