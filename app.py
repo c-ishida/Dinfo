@@ -5,33 +5,8 @@ import os
 # Page configuration
 st.set_page_config(page_title="お薬の説明検索", page_icon="🔍")
 
-# Hide Streamlit UI elements when printing (Ctrl+P)
-st.markdown("""
-<style>
-@media print {
-    /* Hide all Streamlit elements */
-    header, footer, .stApp > header, .stApp > footer,
-    [data-testid="stHeader"], [data-testid="stToolbar"],
-    [data-testid="stDecoration"], [data-testid="stStatusWidget"],
-    .main .block-container {
-        display: none !important;
-    }
-    
-    /* Only show iframe content (print layout) */
-    iframe {
-        display: block !important;
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        border: none;
-    }
-}
-</style>
-""", unsafe_allow_html=True)
+st.title("🔍 お薬の説明")
 
-st.title("🌿 お薬の説明")
 
 # File path
 FILE_PATH = "処方の説明.xlsx"
@@ -316,5 +291,5 @@ else:
                         """
                         
                         components.html(html_content, height=800, scrolling=True)
-                        st.info("💡 上の「印刷する」ボタンをクリックするか、Ctrl+P で印刷ダイアログを開いてください。")
+                        st.info("💡 上の「🖨️ 印刷する」ボタンをクリックしてください。")
 
