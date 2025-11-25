@@ -272,6 +272,11 @@ else:
                             </style>
                         </head>
                         <body>
+                            <div class='print-button no-print'>
+                                <button onclick='window.print()'>
+                                    🖨️ 印刷する
+                                </button>
+                            </div>
                             <div class='print-container'>
                                 <div class='print-header'>
                                     <span>お薬の説明</span>
@@ -279,11 +284,6 @@ else:
                                 </div>
                                 <div class='print-info'>検索語: {html.escape(', '.join(search_terms))} / 件数: {len(results)}件 / 出力日時: {now}</div>
                                 {results_html}
-                            </div>
-                            <div class='print-button no-print'>
-                                <button onclick='window.print()'>
-                                    🖨️ 印刷する
-                                </button>
                             </div>
                         </body>
                         </html>
