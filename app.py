@@ -302,7 +302,7 @@ else:
                         </style>
                         """, unsafe_allow_html=True)
                         
-                        with st.expander("検索結果を表示"):
+                        with st.expander("検索結果一覧"):
                             st.dataframe(results)
 
 
