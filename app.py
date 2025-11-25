@@ -283,7 +283,7 @@ else:
                             </div>
                             <div class='print-button no-print'>
                                 <button onclick='window.print()'>
-                                    🖨️ 印刷する (Ctrl+P)
+                                    🖨️ 印刷する
                                 </button>
                             </div>
                         </body>
