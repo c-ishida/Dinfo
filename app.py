@@ -292,8 +292,17 @@ else:
                         components.html(html_content, height=800, scrolling=True)
                         st.info("💡 上の「🖨️ 印刷する」ボタンをクリックしてください。")
                         
-                        # Show data table in expander below
-                        with st.expander("📊 データテーブルを表示"):
+                        # Show data table in expander below (styled to be less prominent)
+                        st.markdown("""
+                        <style>
+                        div[data-testid="stExpander"] summary {
+                            color: #888888 !important;
+                            font-size: 14px;
+                        }
+                        </style>
+                        """, unsafe_allow_html=True)
+                        
+                        with st.expander("検索結果を表示"):
                             st.dataframe(results)
 
 
