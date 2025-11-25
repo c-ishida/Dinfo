@@ -49,7 +49,7 @@ else:
                     text = str(text)
                 
                 # Replace various hyphen characters with half-width hyphen
-                text = text.replace('−', '-').replace('ー', '-').replace('—', '-').replace('–', '-').replace('‐', '-')
+                text = text.replace('−', '-').replace('ー', '-').replace('ｰ', '-').replace('—', '-').replace('–', '-').replace('‐', '-')
                 
                 # Convert full-width alphanumeric to half-width
                 # Full-width: ０-９, Ａ-Ｚ, ａ-ｚ → Half-width: 0-9, A-Z, a-z
