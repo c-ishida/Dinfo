@@ -140,6 +140,13 @@ else:
                     results = df[mask]
                     
                     st.write(f"{len(results)}件が見つかりました")
+                    
+                    # Add a prominent button to jump to print layout
+                    if len(results) > 0:
+                        st.markdown("---")
+                        st.markdown("### 📄 印刷レイアウト")
+                        st.info("💡 下にスクロールすると印刷用のレイアウトが表示されています。「🖨️ 印刷する」ボタンをクリックしてください。")
+                    
                     st.dataframe(results)
                     
                     # Print layout - auto-show for both button click AND Enter key
