@@ -317,7 +317,4 @@ else:
                         
                         components.html(html_content, height=800, scrolling=True)
                         st.info("💡 上の「印刷する」ボタンをクリックするか、Ctrl+P で印刷ダイアログを開いてください。")
-                        
-                        # Show small "show print layout" link below for reference
-                        st.markdown("---")
-                        st.caption("💡 印刷レイアウトは上に表示されています")
+
