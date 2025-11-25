@@ -141,37 +141,8 @@ else:
                     
                     st.write(f"{len(results)}件が見つかりました")
                     
-                    # Add a button to scroll to print layout
+                    # Print layout - show FIRST for easy access
                     if len(results) > 0:
-                        st.markdown("""
-                        <style>
-                        .print-scroll-button {
-                            display: inline-block;
-                            padding: 12px 24px;
-                            font-size: 16px;
-                            font-weight: bold;
-                            color: white;
-                            background-color: #4CAF50;
-                            border: none;
-                            border-radius: 5px;
-                            cursor: pointer;
-                            text-decoration: none;
-                            margin: 10px 0;
-                        }
-                        .print-scroll-button:hover {
-                            background-color: #45a049;
-                        }
-                        </style>
-                        <a href="#print-layout" class="print-scroll-button">�️ 印刷レイアウトへ移動</a>
-                        """, unsafe_allow_html=True)
-                    
-                    st.dataframe(results)
-                    
-                    # Print layout - auto-show for both button click AND Enter key
-                    if len(results) > 0:
-                        # Add anchor for scroll navigation
-                        st.markdown('<div id="print-layout"></div>', unsafe_allow_html=True)
-                        
                         # Generate print-friendly HTML
                         from datetime import datetime
                         import html
@@ -320,4 +291,9 @@ else:
                         
                         components.html(html_content, height=800, scrolling=True)
                         st.info("💡 上の「🖨️ 印刷する」ボタンをクリックしてください。")
+                        
+                        # Show data table in expander below
+                        with st.expander("📊 データテーブルを表示"):
+                            st.dataframe(results)
+
 
