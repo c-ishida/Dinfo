@@ -112,10 +112,9 @@ else:
                 # Normalize search terms (hyphens, full-width chars, case)
                 search_terms = [normalize_text(term) for term in search_terms]
                 
-                # If no search terms (empty input), show all data
+                # If no search terms (empty input), show warning message
                 if not search_terms:
-                    with st.expander("すべてのお薬を表示する", expanded=True):
-                        st.dataframe(df)
+                    st.warning("⚠️ お薬の番号を入力してください。")
                 else:
                     # Filter data
                     if exact_match:
@@ -139,326 +138,160 @@ else:
                     
                     results = df[mask]
                     
-                    st.write(f"{len(results)}件 見つかりました")
+                    st.write(f"{len(results)}件が見つかりました")
                     st.dataframe(results)
                     
-                    # Print layout - auto-show if search button was clicked, otherwise show button
+                    # Print layout - auto-show for both button click AND Enter key
                     if len(results) > 0:
-                        # If search button was clicked, automatically show print layout
-                        if search_button:
-                            # Generate print-friendly HTML
-                            from datetime import datetime
-                            import html
-                            import streamlit.components.v1 as components
+                        # Generate print-friendly HTML
+                        from datetime import datetime
+                        import html
+                        import streamlit.components.v1 as components
+                        
+                        # Generate custom layout for each result
+                        results_html = ""
+                        for idx, row in results.iterrows():
+                            # Get column values by name
+                            search_num = html.escape(str(row.get('検索番号', '')))
+                            prescription_name = html.escape(str(row.get('処方名', '')))
+                            description = html.escape(str(row.get('説明', '')))
                             
-                            # Generate custom layout for each result
-                            results_html = ""
-                            for idx, row in results.iterrows():
-                                # Get column values by name
-                                search_num = html.escape(str(row.get('検索番号', '')))
-                                prescription_name = html.escape(str(row.get('処方名', '')))
-                                description = html.escape(str(row.get('説明', '')))
-                                
-                                results_html += f"""
-                                <div class='result-item'>
-                                    <div class='first-line'>
-                                        <span class='prescription-name'>{prescription_name}</span>
-                                        <span class='search-number'>{search_num}</span>
-                                    </div>
-                                    <div class='description-section'>
-                                        <div class='description-content'>{description}</div>
-                                    </div>
+                            results_html += f"""
+                            <div class='result-item'>
+                                <div class='first-line'>
+                                    <span class='prescription-name'>{prescription_name}</span>
+                                    <span class='search-number'>{search_num}</span>
                                 </div>
-                                """
-                            
-                            # Complete HTML
-                            now = datetime.now().strftime("%Y年%m月%d日 %H:%M")
-                            html_content = f"""
-                            <!DOCTYPE html>
-                            <html>
-                            <head>
-                                <meta charset="UTF-8">
-                                <style>
-                                    @media print {{
-                                        @page {{
-                                            size: A5;
-                                            margin: 10mm;
-                                        }}
-                                        .no-print {{
-                                            display: none;
-                                        }}
-                                        .print-info {{
-                                            display: none;
-                                        }}
+                                <div class='description-section'>
+                                    <div class='description-content'>{description}</div>
+                                </div>
+                            </div>
+                            """
+                        
+                        # Complete HTML
+                        now = datetime.now().strftime("%Y年%m月%d日 %H:%M")
+                        html_content = f"""
+                        <!DOCTYPE html>
+                        <html>
+                        <head>
+                            <meta charset="UTF-8">
+                            <style>
+                                @media print {{
+                                    @page {{
+                                        size: A5;
+                                        margin: 10mm;
                                     }}
-                                    body {{
-                                        font-family: 'Meiryo', 'MS Gothic', 'Yu Gothic', sans-serif;
-                                        margin: 0;
-                                        padding: 20px;
-                                    }}
-                                    .print-container {{
-                                        max-width: 148mm;
-                                        margin: 0 auto;
-                                        background: white;
-                                    }}
-                                    .print-header {{
-                                        display: flex;
-                                        justify-content: space-between;
-                                        align-items: center;
-                                        font-weight: bold;
-                                        font-size: 14pt;
-                                        margin-bottom: 15px;
-                                        border-bottom: 2px solid #000;
-                                        padding-bottom: 5px;
-                                        color: #000 !important;
-                                    }}
-                                    .pharmacy-name {{
-                                        font-size: 9pt;
-                                        font-weight: normal;
+                                    .no-print {{
+                                        display: none;
                                     }}
                                     .print-info {{
-                                        font-size: 8pt;
-                                        margin-bottom: 10px;
-                                        color: #666;
+                                        display: none;
                                     }}
-                                    .result-item {{
-                                        margin-bottom: 20px;
-                                        page-break-inside: avoid;
-                                    }}
-                                    .first-line {{
-                                        display: flex;
-                                        justify-content: space-between;
-                                        align-items: center;
-                                        border-bottom: 1px solid #000;
-                                        padding-bottom: 5px;
-                                        margin-bottom: 10px;
-                                    }}
-                                    .prescription-name {{
-                                        font-weight: bold;
-                                        font-size: 12pt;
-                                        flex-grow: 1;
-                                        white-space: nowrap;
-                                    }}
-                                    .search-number {{
-                                        font-size: 10pt;
-                                        text-align: right;
-                                        margin-left: 20px;
-                                    }}
-                                    .description-section {{
-                                        font-size: 9pt;
-                                    }}
-                                    .description-label {{
-                                        font-weight: bold;
-                                        margin-bottom: 5px;
-                                    }}
-                                    .description-content {{
-                                        white-space: pre-wrap;
-                                        word-wrap: break-word;
-                                        line-height: 1.5;
-                                    }}
-                                    .print-button {{
-                                        text-align: center;
-                                        margin-top: 20px;
-                                    }}
-                                    button {{
-                                        padding: 12px 24px;
-                                        font-size: 14pt;
-                                        cursor: pointer;
-                                        background-color: #4CAF50;
-                                        color: white;
-                                        border: none;
-                                        border-radius: 5px;
-                                    }}
-                                    button:hover {{
-                                        background-color: #45a049;
-                                    }}
-                                </style>
-                            </head>
-                            <body>
-                                <div class='print-container'>
-                                    <div class='print-header'>
-                                        <span>お薬の説明</span>
-                                        <span class='pharmacy-name'>漢方薬局ハレノヴァ</span>
-                                    </div>
-                                    <div class='print-info'>検索語: {html.escape(', '.join(search_terms))} / 件数: {len(results)}件 / 出力日時: {now}</div>
-                                    {results_html}
+                                }}
+                                body {{
+                                    font-family: 'Meiryo', 'MS Gothic', 'Yu Gothic', sans-serif;
+                                    margin: 0;
+                                    padding: 20px;
+                                }}
+                                .print-container {{
+                                    max-width: 148mm;
+                                    margin: 0 auto;
+                                    background: white;
+                                }}
+                                .print-header {{
+                                    display: flex;
+                                    justify-content: space-between;
+                                    align-items: center;
+                                    font-weight: bold;
+                                    font-size: 14pt;
+                                    margin-bottom: 15px;
+                                    border-bottom: 2px solid #000;
+                                    padding-bottom: 5px;
+                                    color: #000 !important;
+                                }}
+                                .pharmacy-name {{
+                                    font-size: 9pt;
+                                    font-weight: normal;
+                                }}
+                                .print-info {{
+                                    font-size: 8pt;
+                                    margin-bottom: 10px;
+                                    color: #666;
+                                }}
+                                .result-item {{
+                                    margin-bottom: 20px;
+                                    page-break-inside: avoid;
+                                }}
+                                .first-line {{
+                                    display: flex;
+                                    justify-content: space-between;
+                                    align-items: center;
+                                    border-bottom: 1px solid #000;
+                                    padding-bottom: 5px;
+                                    margin-bottom: 10px;
+                                }}
+                                .prescription-name {{
+                                    font-weight: bold;
+                                    font-size: 12pt;
+                                    flex-grow: 1;
+                                    white-space: nowrap;
+                                }}
+                                .search-number {{
+                                    font-size: 10pt;
+                                    text-align: right;
+                                    margin-left: 20px;
+                                }}
+                                .description-section {{
+                                    font-size: 9pt;
+                                }}
+                                .description-label {{
+                                    font-weight: bold;
+                                    margin-bottom: 5px;
+                                }}
+                                .description-content {{
+                                    white-space: pre-wrap;
+                                    word-wrap: break-word;
+                                    line-height: 1.5;
+                                }}
+                                .print-button {{
+                                    text-align: center;
+                                    margin-top: 20px;
+                                }}
+                                button {{
+                                    padding: 12px 24px;
+                                    font-size: 14pt;
+                                    cursor: pointer;
+                                    background-color: #4CAF50;
+                                    color: white;
+                                    border: none;
+                                    border-radius: 5px;
+                                }}
+                                button:hover {{
+                                    background-color: #45a049;
+                                }}
+                            </style>
+                        </head>
+                        <body>
+                            <div class='print-container'>
+                                <div class='print-header'>
+                                    <span>お薬の説明</span>
+                                    <span class='pharmacy-name'>漢方薬局ハレノヴァ</span>
                                 </div>
-                                <div class='print-button no-print'>
-                                    <button onclick='window.print()'>
-                                        🖨️ 印刷する (Ctrl+P)
-                                    </button>
-                                </div>
-                            </body>
-                            </html>
-                            """
-                            
-                            components.html(html_content, height=800, scrolling=True)
-                            st.info("💡 上の「印刷する」ボタンをクリックするか、Ctrl+P で印刷ダイアログを開いてください。")
-                        else:
-                            # For Enter key users, show manual button
-                            st.markdown("---")
-                            
-                            # Initialize session state for print layout
-                            if 'show_print_layout' not in st.session_state:
-                                st.session_state.show_print_layout = False
-                            
-                            if st.button("📄 印刷用レイアウトを表示"):
-                                st.session_state.show_print_layout = True
-                                st.rerun()
-                            
-                            # Show print layout if button was clicked
-                            if st.session_state.show_print_layout:
-                                # Generate print-friendly HTML
-                                from datetime import datetime
-                                import html
-                                import streamlit.components.v1 as components
-                                
-                                # Generate custom layout for each result
-                                results_html = ""
-                                for idx, row in results.iterrows():
-                                    # Get column values by name
-                                    search_num = html.escape(str(row.get('検索番号', '')))
-                                    prescription_name = html.escape(str(row.get('処方名', '')))
-                                    description = html.escape(str(row.get('説明', '')))
-                                    
-                                    results_html += f"""
-                                    <div class='result-item'>
-                                        <div class='first-line'>
-                                            <span class='prescription-name'>{prescription_name}</span>
-                                            <span class='search-number'>{search_num}</span>
-                                        </div>
-                                        <div class='description-section'>
-                                            <div class='description-content'>{description}</div>
-                                        </div>
-                                    </div>
-                                    """
-                                
-                                # Complete HTML
-                                now = datetime.now().strftime("%Y年%m月%d日 %H:%M")
-                                html_content = f"""
-                                <!DOCTYPE html>
-                                <html>
-                                <head>
-                                    <meta charset="UTF-8">
-                                    <style>
-                                        @media print {{
-                                            @page {{
-                                                size: A5;
-                                                margin: 10mm;
-                                            }}
-                                            .no-print {{
-                                                display: none;
-                                            }}
-                                            .print-info {{
-                                                display: none;
-                                            }}
-                                        }}
-                                        body {{
-                                            font-family: 'MS Gothic', 'Yu Gothic', sans-serif;
-                                            margin: 0;
-                                            padding: 20px;
-                                        }}
-                                        .print-container {{
-                                            max-width: 148mm;
-                                            margin: 0 auto;
-                                            background: white;
-                                        }}
-                                        .print-header {{
-                                            display: flex;
-                                            justify-content: space-between;
-                                            align-items: center;
-                                            font-weight: bold;
-                                            font-size: 14pt;
-                                            margin-bottom: 15px;
-                                            border-bottom: 2px solid #000;
-                                            padding-bottom: 5px;
-                                            color: #000 !important;
-                                        }}
-                                        .pharmacy-name {{
-                                            font-size: 9pt;
-                                            font-weight: normal;
-                                        }}
-                                        .print-info {{
-                                            font-size: 8pt;
-                                            margin-bottom: 10px;
-                                            color: #666;
-                                        }}
-                                        .result-item {{
-                                            margin-bottom: 20px;
-                                            page-break-inside: avoid;
-                                        }}
-                                        .first-line {{
-                                            display: flex;
-                                            justify-content: space-between;
-                                            align-items: center;
-                                            border-bottom: 1px solid #000;
-                                            padding-bottom: 5px;
-                                            margin-bottom: 10px;
-                                        }}
-                                        .prescription-name {{
-                                            font-weight: bold;
-                                            font-size: 12pt;
-                                            flex-grow: 1;
-                                            white-space: nowrap;
-                                        }}
-                                        .search-number {{
-                                            font-size: 10pt;
-                                            text-align: right;
-                                            margin-left: 20px;
-                                        }}
-                                        .description-section {{
-                                            font-size: 9pt;
-                                        }}
-                                        .description-label {{
-                                            font-weight: bold;
-                                            margin-bottom: 5px;
-                                        }}
-                                        .description-content {{
-                                            white-space: pre-wrap;
-                                            word-wrap: break-word;
-                                            line-height: 1.5;
-                                        }}
-                                        .print-button {{
-                                            text-align: center;
-                                            margin-top: 20px;
-                                        }}
-                                        button {{
-                                            padding: 12px 24px;
-                                            font-size: 14pt;
-                                            cursor: pointer;
-                                            background-color: #4CAF50;
-                                            color: white;
-                                            border: none;
-                                            border-radius: 5px;
-                                        }}
-                                        button:hover {{
-                                            background-color: #45a049;
-                                        }}
-                                    </style>
-                                </head>
-                                <body>
-                                    <div class='print-container'>
-                                        <div class='print-header'>
-                                            <span>お薬の説明</span>
-                                            <span class='pharmacy-name'>漢方薬局ハレノヴァ</span>
-                                        </div>
-                                        <div class='print-info'>検索語: {html.escape(', '.join(search_terms))} / 件数: {len(results)}件 / 出力日時: {now}</div>
-                                        {results_html}
-                                    </div>
-                                    <div class='print-button no-print'>
-                                        <button onclick='window.print()'>
-                                            🖨️ 印刷する (Ctrl+P)
-                                        </button>
-                                    </div>
-                                </body>
-                                </html>
-                                """
-                                
-                                components.html(html_content, height=800, scrolling=True)
-                                st.info("💡 上の「印刷する」ボタンをクリックするか、Ctrl+P で印刷ダイアログを開いてください。")
-                                
-                                # Reset the flag
-                                st.session_state.show_print_layout = False
-
-
-
+                                <div class='print-info'>検索語: {html.escape(', '.join(search_terms))} / 件数: {len(results)}件 / 出力日時: {now}</div>
+                                {results_html}
+                            </div>
+                            <div class='print-button no-print'>
+                                <button onclick='window.print()'>
+                                    🖨️ 印刷する (Ctrl+P)
+                                </button>
+                            </div>
+                        </body>
+                        </html>
+                        """
+                        
+                        components.html(html_content, height=800, scrolling=True)
+                        st.info("💡 上の「印刷する」ボタンをクリックするか、Ctrl+P で印刷ダイアログを開いてください。")
+                        
+                        # Show small "show print layout" link below for reference
+                        st.markdown("---")
+                        st.caption("💡 印刷レイアウトは上に表示されています")
