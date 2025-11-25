@@ -38,6 +38,18 @@ else:
             # Load data from selected sheet
             df = pd.read_excel(xls, sheet_name=selected_sheet)
             
+            # Fix: Convert 検索番号 column to string to prevent Arrow serialization errors
+            if '検索番号' in df.columns:
+                df['検索番号'] = df['検索番号'].astype(str)
+            
+            # Helper function to normalize hyphens (全角ー、半角-、長音ー → 半角-)
+            def normalize_hyphen(text):
+                """Normalize various hyphen characters to half-width hyphen"""
+                if not isinstance(text, str):
+                    text = str(text)
+                # Replace full-width hyphen, long vowel mark, em dash, en dash with half-width hyphen
+                return text.replace('−', '-').replace('ー', '-').replace('—', '-').replace('–', '-').replace('‐', '-')
+            
             # Search Interface
             # Initialize session state for tracking if search has been performed
             if 'search_performed' not in st.session_state:
@@ -84,6 +96,9 @@ else:
                 import re
                 search_terms = [term.strip() for term in re.split(r'[,\s]+', search_query) if term.strip()]
                 
+                # Normalize hyphens in search terms
+                search_terms = [normalize_hyphen(term) for term in search_terms]
+                
                 # If no search terms (empty input), show all data
                 if not search_terms:
                     with st.expander("すべてのお薬を表示する", expanded=True):
@@ -94,7 +109,8 @@ else:
                         # Exact match logic - match any of the search terms
                         masks = []
                         for term in search_terms:
-                            term_mask = df.astype(str).apply(lambda x: (x == term).any(), axis=1)
+                            # Normalize hyphens in data before comparison
+                            term_mask = df.astype(str).apply(lambda x: x.apply(normalize_hyphen)).apply(lambda x: (x == term).any(), axis=1)
                             masks.append(term_mask)
                         # Combine all masks with OR logic
                         mask = pd.concat(masks, axis=1).any(axis=1)
@@ -102,7 +118,8 @@ else:
                         # Partial match logic - match any of the search terms
                         masks = []
                         for term in search_terms:
-                            term_mask = df.astype(str).apply(lambda x: x.str.contains(term, case=False, na=False).any(), axis=1)
+                            # Normalize hyphens in data before comparison
+                            term_mask = df.astype(str).apply(lambda x: x.apply(normalize_hyphen)).apply(lambda x: x.str.contains(term, case=False, na=False).any(), axis=1)
                             masks.append(term_mask)
                         # Combine all masks with OR logic
                         mask = pd.concat(masks, axis=1).any(axis=1)
