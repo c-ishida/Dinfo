@@ -175,6 +175,7 @@ else:
                         <html>
                         <head>
                             <meta charset="UTF-8">
+                            <title>お薬の説明 - 漢方薬局ハレノヴァ</title>
                             <style>
                                 @media print {{
                                     @page {{
