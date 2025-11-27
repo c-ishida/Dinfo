@@ -297,7 +297,7 @@ else:
                         <style>
                         div[data-testid="stExpander"] summary {
                             color: #888888 !important;
-                            font-size: 14px;
+                            font-size: 12px;
                         }
                         </style>
                         """, unsafe_allow_html=True)
